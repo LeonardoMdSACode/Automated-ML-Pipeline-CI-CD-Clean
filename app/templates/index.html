@@ -10,14 +10,29 @@
             padding: 2rem; 
             background: #f9f9f9; 
         }
+
         h1 { 
             color: #333; 
+            text-align: center;
         }
+
         h2 { 
             color: #666; 
             font-weight: normal; 
             margin-top: 0.5rem; 
+            text-align: center;
         }
+
+        /* Card container */
+        .card {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
         form { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -26,15 +41,18 @@
             width: 100%; 
             margin-top: 1.5rem;
         }
+
         label { 
             font-weight: bold; 
         }
+
         input[type="number"] { 
             padding: 0.5rem; 
             width: 100%; 
             border: 1px solid #ccc; 
             border-radius: 4px; 
         }
+
         button { 
             grid-column: span 2; 
             padding: 0.7rem; 
@@ -45,9 +63,11 @@
             cursor: pointer; 
             font-size: 1rem; 
         }
+
         button:hover { 
             background-color: #45a049; 
         }
+
         pre { 
             background: #fff; 
             padding: 1rem; 
@@ -55,9 +75,17 @@
             border: 1px solid #ddd; 
             margin-top: 1rem; 
             white-space: pre-wrap; 
-            width: 800px; 
             text-align: center;
         }
+
+        /* Footer phrase */
+        footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
         /* Center everything in the page */
         .container { 
             display: flex; 
@@ -68,82 +96,85 @@
 </head>
 <body>
     <div class="container">
-        <h1>Automated ML Prediction Dashboard</h1>
-        <h2>House Price Prediction in King County, USA, 2015</h2>
+        <div class="card">
+            <h1>Automated ML Prediction Dashboard</h1>
+            <h2>House Price Prediction in King County, USA</h2>
 
-        <form id="predictionForm">
-            <!-- Inputs will be inserted here dynamically -->
-        </form>
+            <form id="predictionForm">
+                <!-- Inputs will be inserted here dynamically -->
+            </form>
 
-        <pre id="result">Prediction: </pre>
+            <pre id="result">Prediction: </pre>
+        </div>
+
+        <footer>Built with FastAPI, Python 3.10 and pydantic.</footer>
     </div>
 
-   <script>
-       const featureNames = [
-           "bedrooms", "bathrooms", "sqft_living", "sqft_lot", "floors",
-           "waterfront", "view", "condition", "grade", "sqft_above",
-           "sqft_basement", "yr_built", "yr_renovated", "zipcode", "lat",
-           "long", "sqft_living15", "sqft_lot15"
-       ];
+    <script>
+        const featureNames = [
+            "bedrooms", "bathrooms", "sqft_living", "sqft_lot", "floors",
+            "waterfront", "view", "condition", "grade", "sqft_above",
+            "sqft_basement", "yr_built", "yr_renovated", "zipcode", "lat",
+            "long", "sqft_living15", "sqft_lot15"
+        ];
 
-       const defaultValues = {
-           "bedrooms": 3, "bathrooms": 2, "sqft_living": 1800, "sqft_lot": 5000, "floors": 1,
-           "waterfront": 0, "view": 0, "condition": 3, "grade": 7, "sqft_above": 1800,
-           "sqft_basement": 0, "yr_built": 1995, "yr_renovated": 0, "zipcode": 98178,
-           "lat": 47.51, "long": -122.25, "sqft_living15": 1800, "sqft_lot15": 5000
-       };
-   
-       const form = document.getElementById("predictionForm");
-   
-       featureNames.forEach(f => {
-           const label = document.createElement("label");
-           label.innerText = f;
-           label.htmlFor = f;
-   
-           const input = document.createElement("input");
-           input.type = "number";
-           input.step = "any";
-           input.id = f;
-           input.name = f;
-           input.required = true;
-           input.value = defaultValues[f]; // Set default value
-   
-           form.appendChild(label);
-           form.appendChild(input);
-       });
-   
-       const btn = document.createElement("button");
-       btn.type = "submit";
-       btn.innerText = "Predict";
-       form.appendChild(btn);
-   
-       form.addEventListener("submit", async (e) => {
-           e.preventDefault();
-   
-           const features = {};
-           featureNames.forEach(f => {
-               features[f] = parseFloat(document.getElementById(f).value);
-           });
-   
-           const response = await fetch("/api/predict", {
-               method: "POST",
-               headers: { "Content-Type": "application/json" },
-               body: JSON.stringify(features)
-           });
-   
-           const data = await response.json();
-   
-           if (!response.ok) {
-               document.getElementById("result").textContent =
-                   "Error: " + JSON.stringify(data, null, 2);
-               return;
-           }
-   
-           document.getElementById("result").textContent =
-                   "Prediction: " + data.prediction.toFixed(2) + " $" +
-                   "\nModel: " + data.model_version;
-       });
-   </script>
+        const defaultValues = {
+            "bedrooms": 3, "bathrooms": 2, "sqft_living": 1800, "sqft_lot": 5000, "floors": 1,
+            "waterfront": 0, "view": 0, "condition": 3, "grade": 7, "sqft_above": 1800,
+            "sqft_basement": 0, "yr_built": 1995, "yr_renovated": 0, "zipcode": 98178,
+            "lat": 47.51, "long": -122.25, "sqft_living15": 1800, "sqft_lot15": 5000
+        };
 
+        const form = document.getElementById("predictionForm");
+
+        featureNames.forEach(f => {
+            const label = document.createElement("label");
+            label.innerText = f;
+            label.htmlFor = f;
+
+            const input = document.createElement("input");
+            input.type = "number";
+            input.step = "any";
+            input.id = f;
+            input.name = f;
+            input.required = true;
+            input.value = defaultValues[f];
+
+            form.appendChild(label);
+            form.appendChild(input);
+        });
+
+        const btn = document.createElement("button");
+        btn.type = "submit";
+        btn.innerText = "Predict";
+        form.appendChild(btn);
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const features = {};
+            featureNames.forEach(f => {
+                features[f] = parseFloat(document.getElementById(f).value);
+            });
+
+            const response = await fetch("/api/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(features)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                document.getElementById("result").textContent =
+                    "Error: " + JSON.stringify(data, null, 2);
+                return;
+            }
+
+            document.getElementById("result").textContent =
+                "Prediction: " + data.prediction.toFixed(2) + " $" +
+                "\nModel: " + data.model_version;
+        });
+    </script>
 </body>
 </html>
