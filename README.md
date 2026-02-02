@@ -9,24 +9,6 @@ pinned: false
 license: mit
 ---
 
-# Under Construction
-
-# Notes
-
-Raw dataset: https://www.kaggle.com/datasets/harlfoxem/housesalesprediction
-
-py -3.10 -m venv .venv
-
-.\\.venv\Scripts\activate
-
-python -m pip install --upgrade pip
-
-pip install -r requirements-dev.txt
-
-python scripts/bootstrap.py
-
-uvicorn app.main:app --reload
-
 # Automated ML Pipeline with CI/CD
 
 This repository contains a fully automated **Machine Learning pipeline** with **CI/CD capabilities**, designed for **house price prediction in King County, USA, 2015**. The project features reproducible model training, metric-based quality gates, versioned model packaging, and deployment-ready artifacts. It leverages **Python 3.10**, **scikit-learn** and **GitHub Actions** for automation, ensuring enterprise-grade reproducibility and governance.
@@ -50,7 +32,7 @@ Hugging Face Space: [LeonardoMdSA / Automated ML Pipeline with CI/CD](https://hu
 
 ## Repository Structure (After running bootstrap.py)
 
-```
+```text
 Automated ML Pipeline with CI-CD/
 ├── .github/
 │ └── workflows/
@@ -198,6 +180,7 @@ This project is organized as a **strictly layered, contract-driven ML system**. 
 ---
 
 ### 1. Data Layer
+
 **Responsibility:** Provide deterministic, version-stable inputs.
 
 - `data/raw/` – immutable source dataset  
@@ -207,6 +190,7 @@ This project is organized as a **strictly layered, contract-driven ML system**. 
 ---
 
 ### 2. Training Layer
+
 **Responsibility:** Produce reproducible candidate models.
 
 - `scripts/train.py` – deterministic model training
@@ -216,6 +200,7 @@ This project is organized as a **strictly layered, contract-driven ML system**. 
 ---
 
 ### 3. Evaluation Layer
+
 **Responsibility:** Measure model performance in isolation.
 
 - `scripts/evaluate.py` – computes metrics on test data
@@ -225,6 +210,7 @@ This project is organized as a **strictly layered, contract-driven ML system**. 
 ---
 
 ### 4. Comparison & Quality Gate Layer
+
 **Responsibility:** Enforce model quality and prevent regressions.
 
 - `scripts/compare.py` – candidate vs baseline / previous best
@@ -235,6 +221,7 @@ This project is organized as a **strictly layered, contract-driven ML system**. 
 ---
 
 ### 5. Model Registry Layer
+
 **Responsibility:** Preserve all approved historical models.
 
 - `models/registry/model_vXXX/`
@@ -246,6 +233,7 @@ This project is organized as a **strictly layered, contract-driven ML system**. 
 ---
 
 ### 6. Packaging Layer (Production Boundary)
+
 **Responsibility:** Create the only deployable artifact.
 
 - `scripts/package_model.py` – freezes the approved model
@@ -258,6 +246,7 @@ This project is organized as a **strictly layered, contract-driven ML system**. 
 ---
 
 ### 7. Inference Layer
+
 **Responsibility:** Serve predictions from a frozen artifact.
 
 - `app/inference/predictor.py`
@@ -267,6 +256,7 @@ This project is organized as a **strictly layered, contract-driven ML system**. 
 ---
 
 ### 8. API Layer
+
 **Responsibility:** Expose inference via a stable contract.
 
 - `app/api/routes.py` – `/api/predict`
@@ -276,6 +266,7 @@ This project is organized as a **strictly layered, contract-driven ML system**. 
 ---
 
 ### 9. Application Core Layer
+
 **Responsibility:** Cross-cutting concerns.
 
 - `app/core/config.py` – configuration
@@ -285,6 +276,7 @@ This project is organized as a **strictly layered, contract-driven ML system**. 
 ---
 
 ### 10. Presentation Layer (UI)
+
 **Responsibility:** Human interaction only.
 
 - `app/templates/index.html`
@@ -294,6 +286,7 @@ This project is organized as a **strictly layered, contract-driven ML system**. 
 ---
 
 ### 11. Testing Layer
+
 **Responsibility:** Enforce contracts and prevent regressions.
 
 - `tests/unit/` – deterministic behavior, metrics, versioning
@@ -303,6 +296,7 @@ This project is organized as a **strictly layered, contract-driven ML system**. 
 ---
 
 ### 12. CI/CD Orchestration Layer
+
 **Responsibility:** Automation and governance.
 
 - `.github/workflows/ml_pipeline.yml` – train → evaluate → gate → package
@@ -310,6 +304,7 @@ This project is organized as a **strictly layered, contract-driven ML system**. 
 - No manual promotion or deployment
 
 ---
+
 ## Technology Stack
 
 * Python 3.10
@@ -331,6 +326,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ## Recommendations & Important Notes
 
 ### Model Usage (Critical)
+
 - **Inference always uses the packaged model** located in `models/packaged/model.pkl`.
 - The **model registry (`models/registry/`) is append-only and NOT used by the API**.
 - Never point inference to `latest.json` or directly to registry versions.
@@ -339,6 +335,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ---
 
 ### CI/CD Guarantees
+
 - Model promotion is **fully automated** and governed by metric gates.
 - Any performance regression (e.g., RMSE increase) **blocks packaging and deployment**.
 - Manual model promotion is intentionally unsupported.
@@ -346,6 +343,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ---
 
 ### Determinism & Reproducibility
+
 - Training, evaluation, and comparison are **deterministic by design**.
 - Fixed random seeds and immutable processed datasets are enforced.
 - Re-running the pipeline with identical inputs produces identical artifacts.
@@ -353,6 +351,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ---
 
 ### Tests Are First-Class Citizens
+
 - Unit tests validate:
   - Metric correctness
   - Version increments
@@ -367,22 +366,15 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ---
 
 ### Registry vs Packaged Model (Design Intent)
+
 - `models/registry/` is for **traceability and auditability**.
 - `models/packaged/` is the **single production boundary**.
 - This separation prevents accidental deployment of unvalidated models.
 
 ---
 
-### DVC Removal (Intentional)
-- DVC was removed to keep the pipeline:
-  - Free-tier compatible
-  - Self-contained
-  - Fully reproducible via filesystem artifacts
-- Data versioning is handled via **immutable processed datasets** and CI enforcement.
-
----
-
 ### Frontend Scope
+
 - The UI is intentionally minimal and **not a data science tool**.
 - Its purpose is:
   - Demonstrate inference
@@ -392,6 +384,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ---
 
 ### Deployment Expectations
+
 - The service is designed to run:
   - Locally via Docker
   - In CI
@@ -401,6 +394,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ---
 
 ### Extensibility Notes
+
 - Drift detection, monitoring, and alerting can be added **without modifying**:
   - Training
   - Evaluation
@@ -410,6 +404,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ---
 
 ### Anti-Patterns (Do Not Do This)
+
 - ❌ Loading models directly from `models/registry/`
 - ❌ Skipping metric gates
 - ❌ Manually copying models into `packaged/`
@@ -419,6 +414,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ---
 
 ### Intended Audience
+
 - This project is designed to demonstrate:
   - Production-grade ML engineering
   - CI-governed model promotion
@@ -430,6 +426,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ## References / Documentation
 
 ### Core Technologies
+
 - **FastAPI** – High-performance Python web framework for ML inference APIs  
   https://fastapi.tiangolo.com/
 
@@ -445,6 +442,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ---
 
 ### Testing & Quality
+
 - **pytest** – Unit and integration testing framework  
   https://docs.pytest.org/
 
@@ -454,6 +452,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ---
 
 ### MLOps & Engineering Practices
+
 - **ML Test Score (Google)** – Testing levels for ML systems  
   https://research.google/pubs/pub46555/
 
@@ -466,6 +465,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ---
 
 ### CI/CD & Automation
+
 - **GitHub Actions** – CI/CD workflows for training, testing, and deployment  
   https://docs.github.com/en/actions
 
@@ -475,6 +475,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ---
 
 ### Deployment
+
 - **Docker** – Containerized deployment for reproducible inference services  
   https://docs.docker.com/
 
@@ -484,12 +485,14 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
 ---
 
 ### Dataset
+
 - **King County House Sales Dataset (2014–2015)**  
   https://www.kaggle.com/datasets/harlfoxem/housesalesprediction
 
 ---
 
 ### Design Philosophy
+
 - **Twelve-Factor App** – Principles for production-ready services  
   https://12factor.net/
 
@@ -497,6 +500,7 @@ This project demonstrates a **reproducible, fully automated ML pipeline** with *
   https://en.wikipedia.org/wiki/Separation_of_concerns
 
 ---
+
 ## Contact / Author
 
 * Hugging Face: [https://huggingface.co/LeonardoMdSA](https://huggingface.co/LeonardoMdSA)
