@@ -29,9 +29,11 @@ uvicorn app.main:app --reload
 
 # Automated ML Pipeline with CI/CD
 
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+This repository contains a fully automated **Machine Learning pipeline** with **CI/CD capabilities**, designed for **house price prediction in King County, USA, 2015**. The project features reproducible model training, metric-based quality gates, versioned model packaging, and deployment-ready artifacts. It leverages **Python 3.10**, **scikit-learn** and **GitHub Actions** for automation, ensuring enterprise-grade reproducibility and governance.
 
-This repository contains a fully automated **Machine Learning pipeline** with **CI/CD capabilities**, designed for **house price prediction in King County, USA, 2015**. The project features reproducible model training, metric-based quality gates, versioned model packaging, and deployment-ready artifacts. It leverages **Python 3.10**, **scikit-learn**, **DVC**, and **GitHub Actions** for automation, ensuring enterprise-grade reproducibility and governance.
+The system is designed to run locally on venv python 3.10 or on Hugging Face Spaces, with minimal dependencies and a purposely simple front-end.
+
+Hugging Face Space: [LeonardoMdSA / Automated ML Pipeline with CI/CD](https://huggingface.co/spaces/LeonardoMdSA/Automated-ML-Pipeline-with-CI-CD)
 
 ---
 
@@ -47,68 +49,94 @@ This repository contains a fully automated **Machine Learning pipeline** with **
 
 ---
 
-## Repository Structure
+## Repository Structure (After running bootstrap.py)
 
 ```
-Automated-ML-Pipeline-CI-CD-Clean/
-├─ .dvc/                   # DVC configuration and cache
-│  ├─ cache/               # DVC cache files
-│  └─ tmp/                 # Temporary DVC files
-├─ .github/workflows/      # GitHub Actions workflows
-│  ├─ ml_pipeline.yml      # CI/CD pipeline workflow
-│  └─ deploy_hf.yml        # Deployment to Hugging Face workflow
-├─ .vscode/                # VSCode workspace settings
-├─ app/                    # FastAPI application
-│  ├─ api/                 # API routes
-│  │  └─ routes.py
-│  ├─ core/                # Configs and logging
-│  │  ├─ config.py
-│  │  └─ logging.py
-│  ├─ inference/           # Model inference logic
-│  │  └─ predictor.py
-│  ├─ schemas/             # Request/response schemas
-│  │  └─ request_response.py
-│  ├─ static/              # CSS and static assets
-│  │  └─ styles.css
-│  ├─ templates/           # HTML templates
-│  │  └─ index.html
-│  └─ main.py              # FastAPI app entrypoint
-├─ data/                   # Data folder
-│  ├─ processed/           # Processed datasets (train/test split)
-│  │  └─ train_test.npz
-│  ├─ raw/                 # Raw datasets
-│  │  └─ kc_house_data.csv
-│  └─ reference/           # Reference or lookup data
-├─ models/                 # Models and registry
-│  ├─ baseline/            # Baseline model and metrics
-│  ├─ packaged/            # Packaged model artifacts
-│  └─ registry/            # Versioned model registry
-│     ├─ model_v001/
-│     ├─ model_v002/
-│     ├─ model_v003/
-│     └─ latest.json       # Points to latest version
-├─ reports/                # Evaluation and comparison reports
-│  ├─ evaluations/         # Individual model evaluation JSON
-│  └─ comparison.json      # Overall model comparison
-├─ scripts/                # Pipeline scripts
-│  ├─ bootstrap.py         # Initialize environment and dataset
-│  ├─ train.py             # Train a new model
-│  ├─ evaluate.py          # Evaluate a trained model
-│  ├─ compare.py           # Compare models and check quality gates
-│  ├─ metric_gate.py       # Metric gate logic
-│  ├─ package_model.py     # Package model artifacts
-│  ├─ versioning.py        # Manage model versioning
-│  └─ config.py            # Pipeline configuration
-├─ tests/                  # Tests
-│  ├─ unit/                # Unit tests for functions and scripts
-│  └─ integration/         # Integration tests for pipeline and API
-├─ Dockerfile              # Docker image definition
-├─ dvc.yaml                # DVC pipeline definition
-├─ requirements.txt        # Production dependencies
-├─ requirements-dev.txt    # Development dependencies
-├─ pytest.ini              # Pytest configuration
-├─ repo_structure.py       # Script to visualize repo structure
-└─ README.md               # Project documentation
+Automated ML Pipeline with CI-CD/
+├── .github/
+│ └── workflows/
+│ ├── deploy_hf.yml # Deploy inference app to Hugging Face Spaces
+│ └── ml_pipeline.yml # CI pipeline: train, evaluate, gate, package
+├── .vscode/
+│ └── settings.json # VS Code workspace settings
+├── app/ # Inference service (FastAPI)
+│ ├── api/
+│ │ └── routes.py # Prediction API routes
+│ ├── core/
+│ │ ├── config.py # App configuration
+│ │ └── logging.py # Structured logging setup
+│ ├── inference/
+│ │ └── predictor.py # Loads *packaged* model and runs inference
+│ ├── schemas/
+│ │ └── request_response.py # Pydantic request/response schemas
+│ ├── static/
+│ │ └── styles.css # Frontend styles
+│ ├── templates/
+│ │ └── index.html # Minimal HTML frontend
+│ └── main.py # FastAPI application entrypoint
+├── data/
+│ ├── raw/
+│ │ └── kc_house_data.csv # Raw dataset
+│ └── processed/
+│ └── train_test.npz # Train/test split artifacts
+├── models/
+│ ├── baseline/
+│ │ └── metrics.json # Baseline model metrics
+│ ├── packaged/ # Production-ready model artifact
+│ │ ├── model.pkl # Serialized best model
+│ │ ├── metrics.json # Metrics of packaged model
+│ │ └── packaged.json # Packaging metadata
+│ └── registry/ # Filesystem-based model registry
+│ ├── model_v001/
+│ │ ├── model.pkl
+│ │ └── metadata.json
+│ ├── model_v002/
+│ │ ├── model.pkl
+│ │ └── metadata.json
+│ ├── model_v003/
+│ │ ├── model.pkl
+│ │ └── metadata.json
+│ └── latest.json # Pointer to most recent trained model
+├── reports/
+│ ├── evaluations/ # Per-run evaluation reports
+│ │ ├── model_v001_run*.json
+│ │ ├── model_v002_run*.json
+│ │ └── model_v003_run*.json
+│ └── comparison.json # Model comparison results
+├── scripts/ # Pipeline execution scripts
+│ ├── bootstrap.py # End-to-end local bootstrap
+│ ├── train.py # Deterministic model training
+│ ├── evaluate.py # Model evaluation
+│ ├── compare.py # Compare candidate vs baseline
+│ ├── metric_gate.py # Quality gate enforcement
+│ ├── package_model.py # Package best model for inference
+│ ├── versioning.py # Model version increment logic
+│ ├── config.py # Pipeline configuration
+│ └── __init__.py
+├── tests/
+│ ├── integration/ # End-to-end and CI-like tests
+│ │ ├── test_api_predict.py
+│ │ ├── test_ci_like_flow.py
+│ │ ├── test_gate_blocks_regression.py
+│ │ ├── test_model_promotion.py
+│ │ └── test_train_evaluate_pipeline.py
+│ ├── unit/ # Deterministic unit tests
+│ │ ├── test_compare_gate_logic.py
+│ │ ├── test_compare_self_comparison_guard.py
+│ │ ├── test_data_schema.py
+│ │ ├── test_evaluate_deterministic.py
+│ │ ├── test_metrics_computation.py
+│ │ ├── test_metric_gate.py
+│ │ ├── test_registry_metadata.py
+│ │ ├── test_train_deterministic.py
+│ │ ├── test_train_outputs.py
+│ │ └── test_version_increment.py
+│ ├── conftest.py
+│ └── __init__.py
+├── Dockerfile # Container ready for Hugging Face Spaces
+├── pytest.ini # Pytest configuration
+├── requirements.txt # Runtime dependencies
+└── repo_structure.py # Utility to print repo tree
 ```
 
 ---
@@ -167,3 +195,8 @@ uvicorn app.main:app --reload
 * Pydantic
 
 This project demonstrates a **reproducible, fully automated ML pipeline** with **enterprise-grade CI/CD practices**, suitable for real-world deployment and model governance.
+
+
+## MIT License
+
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
