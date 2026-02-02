@@ -163,7 +163,6 @@ uvicorn app.main:app --reload
 * Python 3.10
 * FastAPI
 * scikit-learn
-* DVC
 * GitHub Actions
 * Pydantic
 
