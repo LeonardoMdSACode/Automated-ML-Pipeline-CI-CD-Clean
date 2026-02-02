@@ -43,7 +43,6 @@ Hugging Face Space: [LeonardoMdSA / Automated ML Pipeline with CI/CD](https://hu
 * **Model Versioning:** Versioned models stored in a local registry (`models/registry`) with metadata.
 * **Quality Gates:** Metric-based evaluation ensures only high-quality models are promoted.
 * **Artifact Packaging:** Models packaged with metrics and metadata for reproducibility.
-* **DVC Integration:** Track datasets, preprocessed data, and model artifacts.
 * **CI/CD Pipelines:** Fully automated using GitHub Actions for testing, evaluation, and deployment.
 * **Web Interface:** Minimal FastAPI dashboard for predictions.
 
@@ -153,22 +152,10 @@ cd Automated-ML-Pipeline-CI-CD-Clean
 2. Create a virtual environment and install dependencies:
 
 ```bash
-python -m venv .venv
+py -3.10 -m venv .venv
 source .venv/bin/activate  # Linux/Mac
 .\.venv\Scripts\activate   # Windows
 pip install -r requirements.txt
-```
-
-3. Pull DVC data:
-
-```bash
-dvc pull
-```
-
-4. Run the FastAPI app locally:
-
-```bash
-uvicorn app.main:app --reload
 ```
 
 ---
@@ -180,19 +167,43 @@ uvicorn app.main:app --reload
 * **Compare models and apply gates:** `python scripts/compare.py`
 * **Package model for deployment:** `python scripts/package_model.py`
 
-### Or run: `python scripts/bootstrap.py` instead.
+#### Or just run: `python scripts/bootstrap.py` instead.
+
+1. Run the FastAPI app locally:
+
+```bash
+uvicorn app.main:app --reload
+```
 
 * **Check API predictions:** Open `http://127.0.0.1:8000` in your browser
 
 ---
 
-## Built With
+## Testing
+
+1. Run all tests with pytest:
+
+   ```bash
+   pytest -v
+   ```
+
+2. Tests will run regardless during CI at github actions.
+
+---
+
+## Technology Stack
 
 * Python 3.10
 * FastAPI
+* Uvicorn
 * scikit-learn
-* GitHub Actions
-* Pydantic
+* GitHub Actions (CI/CD)
+* Pydantic 2.12.5
+* Jinja2
+* Pandas / NumPy
+* Joblib (for model serialization)
+* Docker (for containerized deployment)
+* Hugging Face Spaces (deployment)
 
 This project demonstrates a **reproducible, fully automated ML pipeline** with **enterprise-grade CI/CD practices**, suitable for real-world deployment and model governance.
 
